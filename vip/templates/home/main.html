@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{%load static %}
+{% block title %}VIP
+{% endblock title %}
+
+{% block head %}
+<style type="text/css">
+</style>
+{% endblock head %}
+
+{% block content %}
+{% if user.is_authenticated %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">Navbar</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Link</a>
+      </li>
+      <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Dropdown
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <a class="dropdown-item" href="#">Action</a>
+          <a class="dropdown-item" href="#">Another action</a>
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="#">Something else here</a>
+        </div>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form>
+  </div>
+</nav>
+  Hi {{ user.username }}!
+  {% comment %} <p><a href="{% url 'logout' %}">logout</a></p>
+  <p><a href="{% url 'password_reset' %}">reset password</a></p> {% endcomment %}
+<!-- Footer -->
+<footer style="height: 10vh; width: 100%; margin-bottom: 0; padding-bottom: 0; background-color: pink;">
+
+<div style="float: left;margin:1% 3%; width: 53%">
+<a href="#" style="text-decoration: none; margin-left:2%;">About</a>
+<a href="#" style="text-decoration: none; margin-left:2%;">Terms of use</a>
+<a href="#" style="text-decoration: none; margin-left:2%;">Privacy Policy</a>
+<a href="#" style="text-decoration: none; margin-left:2%;">Contact Us</a>
+</div>
+<div style="float: right; margin:1% 5%;"><h6>&copy;2020 | VIP </h6></div>
+</footer>
+
+{% else %}
+  <div class="container bg-dark" style="width: 50%; float: left; margin: 0; padding: 5%; height: 90vh;">
+  <ul style="display: block; color: white; margin-left: 2%; padding: 10% 2%;list-style-type: none;">
+  <li><h5 style="padding-top: 4%"><img src="{% static 'img/3.png' %}" width="35px" height="35px"> &nbsp;Present your VIEWS to the society.</h5></li>
+  <br>
+  <li><h5 style="padding-top: 4%"><img src="{% static 'img/2.png' %}" width="35px" height="35px"> &nbsp;Raise the ISSUES of the society.</h5></li>
+  <br>
+  <li><h5 style="padding-top: 4%"><img src="{% static 'img/1.png' %}" width="35px" height="35px"> &nbsp;Take POLLS for the society.</h5></li>
+  </ul>
+  </div>
+  <div class="container" style="width: 50%; position: relative; float: right; margin: 0; padding: 5%;height: 90vh;">
+  <ul style="display: block; color: dark; list-style-type: none;">
+  <li><h1>Join the VIPs community today</h1></li>
+  <br><br><br>
+  <li><h5>Become a V I P ...</h5></li>
+  
+  </ul>
+  <a  href="{% url 'login' %}" style="text-decoration: none; color: black; margin: 2%;"><button type="button" class="btn btn-light btn-lg btn-block">Login </button></a>
+<a  href="/register" style="text-decoration: none; color: white;"><button type="button" class="btn btn-dark btn-lg btn-block">Join</button></a>
+  
+  </div>
+
+<footer style="height: 10vh; width: 100%; margin-bottom: 0; padding-bottom: 0;">
+<div style="float: left;margin:1% 3%; width: 53%">
+<a href="#" style="text-decoration: none; margin-left:2%;">About</a>
+<a href="#" style="text-decoration: none; margin-left:2%;">Terms of use</a>
+<a href="#" style="text-decoration: none; margin-left:2%;">Privacy Policy</a>
+<a href="#" style="text-decoration: none; margin-left:2%;">Contact Us</a>
+</div>
+<div style="float: right; margin:1% 5%;"><h6>&copy;2020 | VIP </h6></div>
+</footer>
+
+{% endif %}
+
+
+{% endblock %}

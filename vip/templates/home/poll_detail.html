@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load humanize %} <!-- https://docs.djangoproject.com/en/3.0/ref/contrib/humanize -->
+{% block head %}
+<style type="text/css">
+.overlay{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  display: none;
+  background-color: rgba(0,0,0,0.7); /*dim the background*/
+}
+</style>
+{% endblock head %}
+
+{% block content %}
+<div class="jumbotron" style="margin:0">
+<a href="{% url 'home:all' %}">All polls</a>
+{% if poll.content_type %}
+<div id="overlay" class="overlay" style="text-align: center;"
+   onclick="document.getElementById('overlay').style.display = 'none';" >
+<img style="width:50%;margin-top: 30px; margin-right:10%; border:1px solid black;" src="{% url 'home:poll_picture' poll.id %}">
+</div>
+{% endif %}
+<span style="float: right;">
+({{ poll.updated_at|naturaltime }})
+{% if poll.owner == user %}
+<a href="{% url 'home:poll_update' poll.id %}"><i class="fa fa-pencil"></i></a>
+<a href="{% url 'home:poll_delete' poll.id %}"><i class="fa fa-trash"></i></a>
+{% endif %}
+</span>
+<h1>{{ poll.question }}</h1>
+{% if poll.content_type %}
+<img style="float:right; max-width:50%;" src="{% url 'home:poll_picture' poll.id %}"
+    onclick="document.getElementById('overlay').style.display = 'block';">
+{% endif %}
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="{% url 'home:vote' poll.id %}" method="post">
+{% csrf_token %}
+{% for choiceins in poll.choice_set.all %}
+    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choiceins.id }}">
+    <label for="choice{{ forloop.counter }}">{{ choiceins.choice }}</label><br>
+{% endfor %}
+<input type="submit" value="Vote">
+</form>
+</div>
+{% comment %} <form action="{% url 'home:vote' poll.id %}" method="post">
+{% csrf_token %}
+<input type="radio" name="choice" id="choice1" value="1">
+<label for="choice1">{{ poll.choice1 }}</label><br>
+<input type="radio" name="choice" id="choice2" value="2">
+<label for="choice2">{{ poll.choice2 }}</label><br>
+<input type="radio" name="choice" id="choice3" value="3">
+<label for="choice3">{{ poll.choice3 }}</label><br>
+<input type="radio" name="choice" id="choice4" value="4">
+<label for="choice4">{{ poll.choice4 }}</label><br>
+<input type="submit" value="Vote">
+</form> {% endcomment %}
+<div class="container bg-light" style="margin:0; width:100%">
+{% if user.is_authenticated %}
+<br clear="all"/>
+<p>
+{% load crispy_forms_tags %}
+<form method="post" action="{% url 'home:poll_comment_create' poll.id %}">
+    {% csrf_token %}
+    {{ comment_form|crispy }}
+<input type="submit" value="Submit">
+</form>
+</p>
+{% endif %}
+<p>
+    {% for comment in comments %}
+<p> {{ comment.text }}
+({{ comment.updated_at|naturaltime }})
+{% if user == comment.owner %}
+<a href="{% url 'home:poll_comment_delete' comment.id %}"><i class="fa fa-trash"></i></a>
+{% endif %}
+</p>
+{% endfor %}
+</p>
+
+</div>
+
+{% endblock content %}

@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+{% load crispy_forms_tags %}
+
+{% comment %} {% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block head %}
+<style type="text/css">
+.box1{
+  margin-top: 8%;
+  margin-left: 27%; 
+  border: 2px solid black;
+}
+.input1{
+  margin: 4%;
+  width: 80%;
+  {% comment %} text-align: center;
+  margin-left: 10%;
+}
+</style>
+{% endblock head %}
+
+{% block content %}
+
+
+<div class="box1 ml-20" style="width: 20rem;height: 70vh; z-index: 1;">
+  <h3 style="text-align: center;">Register Account</h3>
+  <form method="post" action="/">
+  {% csrf_token %}
+    <input type="text" class="input1" name="name" id="name" placeholder="Name" required>
+    <input type="email" class="input1" id="email" name="email" aria-describedby="emailHelp" placeholder="Email address" required>
+    <input type="text" class="input1" name="uname" id="uname" placeholder="User Name" required>
+    <input type="password" class="input1" name="pass" id="pass" placeholder="Password" required>
+
+    <button type="submit" class="btn btn-primary" style="width: 8rem; text-align: center; background-color: grey; border:0; margin-left: 28%;" >Join</button>
+
+</form>
+<p>Already have an account? <a href="/login">Login</a></p>
+  </div>
+{% endblock %} {% endcomment %}
+
+
+
+{% block content %}
+<div class="container">
+    <form method="POST" class="col-12 col-md-6 pl-3 pr-3 pl-md-0 pr-md-0">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="mb-3 white-important">
+                Register a new account
+            </legend>
+            {{ form | crispy }}
+        </fieldset>
+        <div class="form-group">
+            <button class="btn btn-outline-primary" type="submit">Sign Up</button>
+        </div>
+    </form>
+    <div class="pt-3">
+        <small class="text-muted">
+            Already Have An Account? <a class="ml-2" href="{% url 'login' %}">Sign In</a>
+        </small>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% load humanize %} <!-- https://docs.djangoproject.com/en/3.0/ref/contrib/humanize -->
+{% block head %}
+<style>
+.overlay{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  display: none;
+  background-color: rgba(0,0,0,0.7); /*dim the background*/
+}
+</style>
+{% endblock head %}
+
+{% block content %}
+<div class="jumbotron" style="margin:0; padding-top:2%">
+<a href="{% url 'home:all' %}">All polls</a>
+{% if poll.content_type %}
+<div id="overlay" class="overlay" style="text-align: center;"
+   onclick="document.getElementById('overlay').style.display = 'none';" >
+<img style="width:50%;margin-top: 30px; border:1px solid black;" src="{% url 'home:poll_picture' poll.id %}">
+</div>
+{% endif %}
+<span style="float: right;">
+({{ poll.updated_at|naturaltime }})
+{% if poll.owner == user %}
+<a href="{% url 'home:poll_update' poll.id %}"><i class="fa fa-pencil"></i></a>
+<a href="{% url 'home:poll_delete' poll.id %}"><i class="fa fa-trash"></i></a>
+{% endif %}
+</span>
+<h1>{{ poll.question }}</h1>
+{% if poll.content_type %}
+<img style="float:right; max-width:50%;" src="{% url 'home:poll_picture' poll.id %}"
+    onclick="document.getElementById('overlay').style.display = 'block';">
+{% endif %}
+<ul>
+{% for choiceins in poll.choice_set.all %}
+<label for=choiceins.choice >{{ choiceins.choice }}</label>
+<meter id={{ choiceins.choice }} value={{choiceins.votes}} min="0" max="10"></meter> -- {{ choiceins.votes }} vote{{ choiceins.votes|pluralize }}<br/>
+    {% comment %} <li>{{ choiceins.choice }} -- {{ choiceins.votes }} vote{{ choiceins.votes|pluralize }} <meter</li> {% endcomment %}
+{% endfor %}
+</ul>
+</div>
+{% comment %} <ul>
+    <li>{{ poll.choice1 }} -- {{ poll.n1 }} vote{{ poll.n1|pluralize }}</li>
+    <li>{{ poll.choice2 }} -- {{ poll.n2 }} vote{{ poll.n2|pluralize }}</li>
+    <li>{{ poll.choice3 }} -- {{ poll.n3 }} vote{{ poll.n3|pluralize }}</li>
+    <li>{{ poll.choice4 }} -- {{ poll.n4 }} vote{{ poll.n4|pluralize }}</li>
+</ul> {% endcomment %}
+<div class="container bg-light" style="margin:0; width:100%">
+{% if user.is_authenticated %}
+<br clear="all"/>
+<p>
+{% load crispy_forms_tags %}
+<form method="post" action="{% url 'home:poll_comment_create' poll.id %}">
+    {% csrf_token %}
+    {{ comment_form|crispy }}
+<input type="submit" value="Submit">
+</form>
+</p>
+{% endif %}
+<p>
+    {% for comment in comments %}
+<p> {{ comment.text }}
+({{ comment.updated_at|naturaltime }})
+{% if user == comment.owner %}
+<a href="{% url 'home:poll_comment_delete' comment.id %}"><i class="fa fa-trash"></i></a>
+{% endif %}
+</p>
+{% endfor %}
+</p>
+</div>
+{% endblock content %}

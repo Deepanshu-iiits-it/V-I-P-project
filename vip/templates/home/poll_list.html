@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{%load static %}
+{% block title %}VIP
+{% endblock title %}
+
+{% block head %}
+<style type="text/css">
+</style>
+{% endblock head %}
+
+{% block content %}
+{% if user.is_authenticated %}
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <a class="navbar-brand" style="margin-left: 5%" href="/">V I P</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" style="margin-left: 60%" id="navbarSupportedContent">
+    <ul class="navbar-nav my-2 my-lg-0 my-sm-0">
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'home:poll_create' %}">Add Poll</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Settings</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'logout' %}?next={% url 'home:all' %}">Logout</a>
+      </li>
+      
+    </ul>
+    {% comment %} <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+    </form> {% endcomment %}
+  </div>
+</nav>
+<hr width="25%" color="white" style="margin: 0; padding:0;" class="bg-dark" >
+<div style="float:left; width:25%; height:80vh; " class=" container bg-dark">
+<div style="float:left; margin:20% 10%; width:90%; height:50vh; border:1px solid white; border-radius:3%" class=" container bg-light">
+  <br>
+  <h3 class="white-important p-2">
+                Profile
+            </h3>
+            <article class="media content-section" style="height: 140px; width: 100%">
+                    <div class="mt-2 d-flex full-width align-items-center">
+                        <img
+                           class="rounded-circle mr-3 img-fluid"
+                           style="width: 50px; height: 50px;"
+                           src="{% static 'img/default.png' %}">
+                        <div>
+                            <h6 style="text-align: left">                                    
+                                {{ user.username }}
+                            </h6>
+                            <p style="text-align: left"> 
+                            {% if user.email|length < 19 %}
+                {{ user.email }}
+            {% else %}
+                {{ user.email|slice:"0:17" }}...
+            {% endif %}                                   
+                                
+                            </p>
+
+                        </div>
+                    </div>
+  {% comment %} <img src="media/profile_pics/default.png">
+  {{ user.username }} {% endcomment %}
+  <article class="media content-section">
+  <div class="row full-width pl-2" style="position: relative; margin:110% -150% ; ">
+  <a href="{% url 'home:poll_create' %}"><button type="button" class="btn btn-primary">Add Poll</button></a>
+  <br><p style="position: relative; margin:20% -45% ; ">
+<a href="{% url 'logout' %}?next={% url 'home:all' %}">Logout</a> |
+<a href="{% url 'password_reset' %}">Reset Password</a>
+</p>
+</div>
+</article>
+  </div>
+</div>
+<div style="float:left; width:75%; height:80vh;" class=" container bg-dark">
+<br><br>
+<h1>Polls</h1>
+<div style="float:right">
+<!-- https://www.w3schools.com/howto/howto_css_search_button.asp -->
+<form>
+  <input type="text" placeholder="Search.." name="search"
+  {% if search %} value="{{ search }}" {% endif %}
+  >
+  <button type="submit"><i class="fa fa-search"></i></button>
+<a href="{% url 'home:all' %}"><i class="fa fa-undo"></i></a>
+</form>
+</div>
+<p>
+{% if poll_list %}
+<ul style="list-style-type: none;">
+  {% for poll in poll_list %}
+    <li>
+    <div style="width:55%; height:20vh; border:1px solid white; border-radius:1%; margin-left:-2%; margin-bottom:1vh;" class="container bg-light">
+        <br>
+        
+        <a href="{% url 'home:poll_detail'  poll.id %}">
+            {% if poll.question|length < 30 %}
+                {{ poll.question }}
+            {% else %}
+                {{ poll.question|slice:"0:30" }}
+                <a href="{% url 'home:poll_detail'  poll.id %}">...</a>
+            {% endif %}
+        </a>
+        {% if poll.owner == user %}
+        <span style="margin-left:10%">
+        {% comment %} <a href="{% url 'home:poll_update' poll.id %}">Edit</a> |
+        <a href="{% url 'home:poll_delete' poll.id %}">Delete</a> {% endcomment %}
+        <a href="{% url 'home:poll_update' poll.id %}"><i class="fa fa-pencil"></i></a>&nbsp;&nbsp;
+<a href="{% url 'home:poll_delete' poll.id %}"><i class="fa fa-trash"></i></a>
+        </span>
+        
+        {% endif %}
+        <br><br/>
+        <small><span style="margin-left:40%">
+        {% if poll.owner.username %}
+            By {{ poll.owner.username }} &nbsp;&nbsp;
+        {% endif %}
+        
+        {{ poll.natural_updated }}
+        </span>
+        </small>
+
+        {% comment %} {% if user.is_authenticated %}
+        <!-- Two hrefs with two stacked icons each - one showing and one hidden -->
+        <a href="#" onclick=
+            "favPost('{% url 'home:poll_unfavorite' poll.id %}', {{ poll.id }} );return false;"
+            {% if poll.id not in favorites %} style="display: none;" {% endif %}
+            id="favorite_star_{{poll.id}}">
+        <span class="fa-stack" style="vertical-align: middle;">
+        <i class="fa fa-star fa-stack-1x" style="color: orange;"></i>
+        <i class="fa fa-star-o fa-stack-1x"></i>
+        </span>
+        </a>
+        <!-- the second href -->
+        <a href="#" onclick=
+             "favPost('{% url 'home:poll_favorite' poll.id %}', {{ poll.id }} );return false;"
+            {% if poll.id in favorites %} style="display: none;" {% endif %}
+            id="unfavorite_star_{{poll.id}}">
+        <span class="fa-stack" style="vertical-align: middle;">
+        <i class="fa fa-star fa-stack-1x" style="display: none; color: orange;"></i>
+        <i class="fa fa-star-o fa-stack-1x"></i>
+        </span>
+        </a>
+        {% endif %} {% endcomment %}
+</div>
+    </li>
+  {% endfor %}
+</ul>
+{% else %}
+  <p>There are no polls in the database.</p>
+{% endif %}
+</p>
+
+</div>
+<script>
+function favPost(url, thing_id) {
+    console.log('Requesting JSON');
+    $.post(url, {},  function(rowz){
+        console.log(url, 'finished');
+        $("#unfavorite_star_"+ad_id).toggle();
+        $("#favorite_star_"+ad_id).toggle();
+    }).fail(function(xhr) {
+        alert('Url failed with '+xhr.status+' '+url);
+    });
+}
+</script>
+
+<!-- Footer -->
+<footer style="float:bottom; height: 10vh; width: 100%; margin-bottom: 0; padding-bottom: 0; background-color: pink;">
+
+<div style="float: left;margin:1% 3%; width: 53%">
+<a href="#" style="text-decoration: none; margin-left:2%;">About</a>
+<a href="#" style="text-decoration: none; margin-left:2%;">Terms of use</a>
+<a href="#" style="text-decoration: none; margin-left:2%;">Privacy Policy</a>
+<a href="#" style="text-decoration: none; margin-left:2%;">Contact Us</a>
+</div>
+<div style="float: right; margin:1% 5%;"><h6>&copy;2020 | VIP </h6></div>
+</footer>
+
+{% else %}
+  <div class="container bg-dark" style="width: 50%; float: left; margin: 0; padding: 5%; height: 90vh;">
+  <ul style="display: block; color: white; margin-left: 2%; padding: 10% 2%;list-style-type: none;">
+  <li><h5 style="padding-top: 4%"><img src="{% static 'img/3.png' %}" width="35px" height="35px"> &nbsp;Present your VIEWS to the society.</h5></li>
+  <br>
+  <li><h5 style="padding-top: 4%"><img src="{% static 'img/2.png' %}" width="35px" height="35px"> &nbsp;Raise the ISSUES of the society.</h5></li>
+  <br>
+  <li><h5 style="padding-top: 4%"><img src="{% static 'img/1.png' %}" width="35px" height="35px"> &nbsp;Take POLLS for the society.</h5></li>
+  </ul>
+  </div>
+  <div class="container" style="width: 50%; position: relative; float: right; margin: 0; padding: 5%;height: 90vh;">
+  <ul style="display: block; color: dark; list-style-type: none;">
+  <li><h1>Join the VIPs community today</h1></li>
+  <br><br><br>
+  <li><h5>Become a V I P ...</h5></li>
+  
+  </ul>
+  <a  href="{% url 'login' %}" style="text-decoration: none; color: black; margin: 2%;"><button type="button" class="btn btn-light btn-lg btn-block">Login </button></a>
+<a  href="/register" style="text-decoration: none; color: white;"><button type="button" class="btn btn-dark btn-lg btn-block">Join</button></a>
+  
+  </div>
+
+<footer style="height: 10vh; width: 100%; margin-bottom: 0; padding-bottom: 0;">
+<div style="float: left;margin:1% 3%; width: 53%">
+<a href="#" style="text-decoration: none; margin-left:2%;">About</a>
+<a href="#" style="text-decoration: none; margin-left:2%;">Terms of use</a>
+<a href="#" style="text-decoration: none; margin-left:2%;">Privacy Policy</a>
+<a href="#" style="text-decoration: none; margin-left:2%;">Contact Us</a>
+</div>
+<div style="float: right; margin:1% 5%;"><h6>&copy;2020 | VIP </h6></div>
+</footer>
+
+{% endif %}
+
+
+{% endblock %}
+
+{% comment %} {% extends "base.html" %}
+{% block content %}
+
+{% endblock %} {% endcomment %}
