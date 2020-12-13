@@ -5,8 +5,8 @@
   <form action="" method="post" id="upload_form" enctype="multipart/form-data">
     {% csrf_token %}
     {{ form|crispy }}
-    <small>*Note: For not applying any condition, type 0 in the given column for that condition.</small>
-    <input type="submit" value="Submit">
+    {% comment %} <small>*Note: For not applying any condition, type 0 in the given column for that condition.</small> {% endcomment %}
+    <input type="submit" value="Raise Issue">
     <input type="submit" value="Cancel" onclick="window.location.href='{% url 'home:all' %}';return false;">
   <br><br>
   </form>

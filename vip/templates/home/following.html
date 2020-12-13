@@ -1,0 +1,14 @@
+{% extends 'base.html'%}
+{%block content%}
+
+<div class="jumbotron">
+<a href="{% url 'home:all' %}">Home</a>
+<h3>Followings of {{user.username}}</h3></div>
+<div class="container bg-light">
+<ul style="list-style-type:none">
+{% for f in following_list %}
+<li><a href="{% url 'home:user_detail' f.follow_user.username %}" style="text-decoration:none; color:green" >{{ f.follow_user.username }} </a></li>
+{% endfor %}
+</ul>
+</div>
+{% endblock%}

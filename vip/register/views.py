@@ -21,11 +21,11 @@
 
 
 from django.shortcuts import render, redirect
-from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
+from .forms import UserRegisterForm, UserUpdateForm
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-
+from home.models import Profile
 
 def register(request):
     if request.method == 'POST':
@@ -34,38 +34,41 @@ def register(request):
             form.save()
             username = form.cleaned_data.get('username')
             messages.success(request, f'Account created for {username}.')
+            u=User.objects.filter(username=username)
+            prof=Profile(user=u[0],name=None,country=None,city=None,age=None,sex=None)
+            prof.save()
             return redirect('login')
     else:
         form = UserRegisterForm()
     return render(request, 'registration/register.html', {'form': form})
 
 
-@login_required
-def profile(request):
-    if request.method == 'POST':
-        uform = UserUpdateForm(request.POST, instance=request.user)
-        pform = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
+# @login_required
+# def profile(request):
+#     if request.method == 'POST':
+#         uform = UserUpdateForm(request.POST, instance=request.user)
+#         pform = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
 
-        if uform.is_valid() and pform.is_valid():
-            uform.save()
-            pform.save()
-            messages.success(request, f'Account has been updated.')
-            return redirect('profile')
-    else:
-        uform = UserUpdateForm(instance=request.user)
-        pform = ProfileUpdateForm(instance=request.user.profile)
+#         if uform.is_valid() and pform.is_valid():
+#             uform.save()
+#             pform.save()
+#             messages.success(request, f'Account has been updated.')
+#             return redirect('profile')
+#     else:
+#         uform = UserUpdateForm(instance=request.user)
+#         pform = ProfileUpdateForm(instance=request.user.profile)
 
-    return render(request, 'registration/profile.html', {'uform': uform, 'pform': pform})
+#     return render(request, 'registration/profile.html', {'uform': uform, 'pform': pform})
 
 
 
-@login_required
-def SearchView(request):
-    if request.method == 'POST':
-        kerko = request.POST.get('search')
-        print(kerko)
-        results = User.objects.filter(username__contains=kerko)
-        context = {
-            'results':results
-        }
-        return render(request, 'users/search_result.html', context)
+# @login_required
+# def SearchView(request):
+#     if request.method == 'POST':
+#         kerko = request.POST.get('search')
+#         print(kerko)
+#         results = User.objects.filter(username__contains=kerko)
+#         context = {
+#             'results':results
+#         }
+#         return render(request, 'users/search_result.html', context)

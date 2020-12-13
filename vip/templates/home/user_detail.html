@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="jumbotron" style="margin:0">
+<a href="{% url 'home:all' %}">Home</a>
+
+
+<h1>{{ viewuser.username }}</h1>
+{{ prof.name }}<br/>
+{{viewuser.email}}<br/>
+<a href="{% url 'home:followings' viewuser.username %}">Followings {{followings}}</a> |
+<a href="{% url 'home:followers' viewuser.username %}">Followers {{followers}}</a>
+<br/><br/>
+{% if canfollow is True %}
+<a href="{% url 'home:follow' viewuser.username %}"><button>Follow</button></a>
+{% endif %}
+{% if canunfollow is True %}
+<a href="{% url 'home:unfollow' viewuser.username %}"><button>Unfollow</button></a>
+{% endif %}
+</div>
+{%endblock%}

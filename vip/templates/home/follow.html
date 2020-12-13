@@ -1,0 +1,29 @@
+{% extends 'base.html'%}
+{%block content%}
+
+{% if follow is "follower" %}
+<div class="jumbotron">
+<a href="{% url 'home:all' %}">Home</a>
+<h3>Followers of {{user.username}}</h3></div>
+<div class="container bg-light">
+<ul style="list-style-type:none">
+{% for f in follower_list %}
+<li><a href="{% url 'home:user_detail' f.follow_user.username %}" style="text-decoration:none; color:green" >{{ f.follow_user.username }} </a></li>
+{% endfor %}
+</ul>
+</div>
+{% else %}
+<div class="jumbotron">
+<a href="{% url 'home:all' %}">Home</a>
+<h3>Followings</h3></div>
+<div class="container bg-light">
+<ul style="list-style-type:none">
+{% for f in following_list %}
+<li><a href="{% url 'home:user_detail' f.username %}" style="text-decoration:none; color:green" >{{ f.username }} </a></li>
+{% endfor %}
+</ul>
+</div>
+
+{% endif %}
+
+{%endblock%}

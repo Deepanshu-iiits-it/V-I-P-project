@@ -18,29 +18,36 @@
 {% block content %}
 <div class="jumbotron" style="margin:0">
 <a href="{% url 'home:all' %}">Home</a>
-{% if poll.content_type %}
+{% if issue.content_type %}
 <div id="overlay" class="overlay" style="text-align: center;"
    onclick="document.getElementById('overlay').style.display = 'none';" >
-<img style="width:50%;margin-top: 30px; margin-right:10%; border:1px solid black;" src="{% url 'home:poll_picture' poll.id %}">
+<img style="width:50%;margin-top: 30px; margin-right:10%; border:1px solid black;" src="{% url 'home:issue_picture' issue.id %}">
 </div>
 {% endif %}
 <span style="float: right;">
-({{ poll.updated_at|naturaltime }})
-{% if poll.owner == user %}
-<a href="{% url 'home:poll_update' poll.id %}"><i class="fa fa-pencil"></i></a>
-<a href="{% url 'home:poll_delete' poll.id %}"><i class="fa fa-trash"></i></a>
+({{ issue.updated_at|naturaltime }})
+{% if issue.owner == user %}
+<a href="{% url 'home:issue_update' issue.id %}"><i class="fa fa-pencil"></i></a>
+<a href="{% url 'home:issue_delete' issue.id %}"><i class="fa fa-trash"></i></a>
 {% endif %}
 </span>
-<h1>{{ poll.question }}</h1>
-{% if poll.content_type %}
-<img style="float:right; max-width:50%;" src="{% url 'home:poll_picture' poll.id %}"
+<h1>#{{ issue.title }}</h1>
+{% if issue.anonymous is False %}
+<small style="color:green">By {{ issue.owner }}</small>
+{% endif %}
+{% if issue.content_type %}
+<img style="float:right; max-width:30%; margin-left:3%" src="{% url 'home:issue_picture' issue.id %}"
     onclick="document.getElementById('overlay').style.display = 'block';">
 {% endif %}
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-{% if permission is True %}
-<form action="{% url 'home:vote' poll.id %}" method="post">
+<p>{{issue.text}}</p>
+<br/>
+<h5>Total Views = {{ccount}}</h5>
+</div>
+{% comment %} {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %} {% endcomment %}
+{% comment %} {% if permission is True %}
+<form action="{% url 'home:vote' issue.id %}" method="post">
 {% csrf_token %}
-{% for choiceins in poll.choice_set.all %}
+{% for choiceins in issue.choice_set.all %}
     <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choiceins.id }}">
     <label for="choice{{ forloop.counter }}">{{ choiceins.choice }}</label><br>
 {% endfor %}
@@ -49,7 +56,7 @@
 </form>
 {% else %}
 <ul>
-{% for choiceins in poll.choice_set.all %}
+{% for choiceins in issue.choice_set.all %}
     <li>{{ choiceins.choice }}</li><br>
 {% endfor %}
 </ul>
@@ -57,39 +64,36 @@
 {% endif %}
 <small>
 {% if permission is False %}
-{% if poll.Required_Minimum_Age is 0 %}
+{% if issue.Required_Minimum_Age is 0 %}
 {%else%}
-*Minimum age required is {{poll.Required_Minimum_Age}}<br/>
+*Minimum age required is {{issue.Required_Minimum_Age}}<br/>
 {% endif %}
-{% if poll.Required_City is '0' %}
-{% elif poll.Required_City is 0 %}
+{% if issue.Required_City is '0' %}
+{% elif issue.Required_City is 0 %}
 {%else%}
-*Only for residents of the City {{poll.Required_City}}<br/>
+*Only for residents of the City {{issue.Required_City}}<br/>
 {% comment %} Permission: {{perm}}</br> {% endcomment %}
+{% comment%}
 {% endif %}
-{% if poll.Required_Sex is "Male" %}
+{% if issue.Required_Sex is "Male" %}
 *Only for Males<br/>
-{%elif poll.Required_Sex is "Female" %}
+{%elif issue.Required_Sex is "Female" %}
 *Only for Females<br/>
 {% endif %}
 {%endif%}
 </small>
-<a href="{% url 'home:poll_result' poll.id %}">View Results</a>
-<br>
-<br>
-<h5>Total Votes = {{ctotal}}</h5>
-<h5>Total Views = {{ccount}}</h5>
-</div>
-{% comment %} <form action="{% url 'home:vote' poll.id %}" method="post">
+<a href="{% url 'home:issue_result' issue.id %}">View Results</a>
+</div> {% endcomment %}
+{% comment %} <form action="{% url 'home:vote' issue.id %}" method="post">
 {% csrf_token %}
 <input type="radio" name="choice" id="choice1" value="1">
-<label for="choice1">{{ poll.choice1 }}</label><br>
+<label for="choice1">{{ issue.choice1 }}</label><br>
 <input type="radio" name="choice" id="choice2" value="2">
-<label for="choice2">{{ poll.choice2 }}</label><br>
+<label for="choice2">{{ issue.choice2 }}</label><br>
 <input type="radio" name="choice" id="choice3" value="3">
-<label for="choice3">{{ poll.choice3 }}</label><br>
+<label for="choice3">{{ issue.choice3 }}</label><br>
 <input type="radio" name="choice" id="choice4" value="4">
-<label for="choice4">{{ poll.choice4 }}</label><br>
+<label for="choice4">{{ issue.choice4 }}</label><br>
 <input type="submit" value="Vote">
 </form> {% endcomment %}
 <div class="container bg-light" style="margin:0; width:100%">
@@ -97,7 +101,7 @@
 <br clear="all"/>
 <p>
 {% load crispy_forms_tags %}
-<form method="post" action="{% url 'home:poll_comment_create' poll.id %}">
+<form method="post" action="{% url 'home:issue_comment_create' issue.id %}">
     {% csrf_token %}
     {{ comment_form|crispy }}
 <input type="submit" value="Present">
@@ -109,7 +113,7 @@
 <p><span style="color:red">{% if comment.anonymous is False %}{{comment.owner}}{%else%}?{% endif %}:</span> {{ comment.text }}
 ({{ comment.updated_at|naturaltime }})
 {% if user == comment.owner %}
-<a href="{% url 'home:poll_comment_delete' comment.id %}"><i class="fa fa-trash"></i></a>
+<a href="{% url 'home:issue_comment_delete' comment.id %}"><i class="fa fa-trash"></i></a>
 {% endif %}
 </p>
 {% endfor %}

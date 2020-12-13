@@ -17,7 +17,7 @@
 
 {% block content %}
 <div class="jumbotron" style="margin:0; padding-top:2%">
-<a href="{% url 'home:all' %}">All polls</a>
+<a href="{% url 'home:all' %}">Home</a>
 {% if poll.content_type %}
 <div id="overlay" class="overlay" style="text-align: center;"
    onclick="document.getElementById('overlay').style.display = 'none';" >
@@ -39,10 +39,13 @@
 <ul>
 {% for choiceins in poll.choice_set.all %}
 <label for=choiceins.choice >{{ choiceins.choice }}</label>
-<meter id={{ choiceins.choice }} value={{choiceins.votes}} min="0" max="10"></meter> -- {{ choiceins.votes }} vote{{ choiceins.votes|pluralize }}<br/>
+<meter id={{ choiceins.choice }} value={{choiceins.votes}} min="0" max={{ctotal}} ></meter> -- {{ choiceins.votes }} vote{{ choiceins.votes|pluralize }}<br/>
     {% comment %} <li>{{ choiceins.choice }} -- {{ choiceins.votes }} vote{{ choiceins.votes|pluralize }} <meter</li> {% endcomment %}
 {% endfor %}
 </ul>
+<br/>
+<h5>Total Votes = {{ctotal}}</h5>
+<h5>Total Views = {{ccount}}</h5>
 </div>
 {% comment %} <ul>
     <li>{{ poll.choice1 }} -- {{ poll.n1 }} vote{{ poll.n1|pluralize }}</li>
@@ -58,13 +61,13 @@
 <form method="post" action="{% url 'home:poll_comment_create' poll.id %}">
     {% csrf_token %}
     {{ comment_form|crispy }}
-<input type="submit" value="Submit">
+<input type="submit" value="Present">
 </form>
 </p>
 {% endif %}
 <p>
     {% for comment in comments %}
-<p> {{ comment.text }}
+<p><span style="color:red">{% if comment.anonymous is False %}{{comment.owner}}{%else%}?{% endif %}:</span>  {{ comment.text }}
 ({{ comment.updated_at|naturaltime }})
 {% if user == comment.owner %}
 <a href="{% url 'home:poll_comment_delete' comment.id %}"><i class="fa fa-trash"></i></a>

@@ -4,8 +4,48 @@
 {% endblock title %}
 
 {% block head %}
+{% comment %} <link rel="stylesheet"
+    href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css"
+    crossorigin="anonymous">
+
+<link rel="stylesheet"
+    href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap-theme.min.css"
+    crossorigin="anonymous">
+
+<link rel="stylesheet"
+    href="https://code.jquery.com/ui/1.12.1/themes/ui-lightness/jquery-ui.css"
+     crossorigin="anonymous">
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"
+    crossorigin="anonymous"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"
+    crossorigin="anonymous"></script>
+
+<script
+  src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"
+  crossorigin="anonymous"></script>
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/v4-shims.css">
+
+
 <style type="text/css">
 </style>
+
+<script>
+function favPost(url, thing_id) {
+    console.log('Requesting JSON');
+    $.post(url, {},  function(rowz){
+        console.log(url, 'finished');
+        $("#unfavorite_star_"+poll_id).toggle();
+        $("#favorite_star_"+poll_id).toggle();
+    }).fail(function(xhr) {
+        alert('Url failed with '+xhr.status+' '+url);
+    });
+}
+</script> {% endcomment %}
 {% endblock head %}
 
 {% block content %}
@@ -17,18 +57,34 @@
     <span class="navbar-toggler-icon"></span>
   </button>
 
-  <div class="collapse navbar-collapse" style="margin-left: 60%" id="navbarSupportedContent">
+  <div class="collapse navbar-collapse" style="margin-left: 50%" id="navbarSupportedContent">
     <ul class="navbar-nav my-2 my-lg-0 my-sm-0">
+    <li>
+      <form action="{% url 'home:search_user' %}" method="post">{% csrf_token %}
+  <input type="text" placeholder="Search Users.." name="search"
+  {% if search %} value="{{ search }}" {% endif %}
+  >
+  <button type="submit"><i class="fa fa-search"></i></button>
+<a href="{% url 'home:all' %}"><i class="fa fa-undo"></i></a>
+</form>
+</li>
       <li class="nav-item">
-        <a class="nav-link" href="{% url 'home:poll_create' %}">Add Poll</a>
+        <a class="nav-link" href="{% url 'home:issue_create' %}">Raise Issue</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#">Settings</a>
+        <a class="nav-link" href="{% url 'home:profile' %}">Profile</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="{% url 'logout' %}?next={% url 'home:all' %}">Logout</a>
       </li>
-      
+       {% comment %} <div class="col-12 col-md-3 dont-move">
+            <form action="{% url 'home:search_user' %}" method="post">
+                
+                    <input required name="search" type="text" id="zip-code-input" placeholder="Search Users">
+                    <input type="submit"><i class="fa fa-search"></i></a>
+                </form>
+              </div> {% endcomment %}
+              
     </ul>
     {% comment %} <form class="form-inline my-2 my-lg-0">
       <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
@@ -36,7 +92,7 @@
     </form> {% endcomment %}
   </div>
 </nav>
-<hr width="25%" color="white" style="margin: 0; padding:0;" class="bg-dark" >
+<hr width="15%" color="white" style="margin: 0; padding:0;" class="bg-dark" >
 <div style="float:left; width:25%; height:80vh; " class=" container bg-dark">
 <div style="float:left; margin:20% 10%; width:90%; height:50vh; border:1px solid white; border-radius:3%" class=" container bg-light">
   <br>
@@ -70,36 +126,70 @@
   <div class="row full-width pl-2" style="position: relative; margin:110% -150% ; ">
   <a href="{% url 'home:poll_create' %}"><button type="button" class="btn btn-primary">Add Poll</button></a>
   <br><p style="position: relative; margin:20% -45% ; ">
-<a href="{% url 'logout' %}?next={% url 'home:all' %}">Logout</a> |
-<a href="{% url 'password_reset' %}">Reset Password</a>
+<a href="{% url 'home:followings' user.username %}">Followings {{followings}}</a> |
+<a href="{% url 'home:followers' user.username %}">Followers {{followers}}</a>
 </p>
 </div>
 </article>
   </div>
 </div>
-<div style="float:left; width:75%; height:80vh;" class=" container bg-dark">
+<div style="float:left; width:75%; height:80vh; overflow-y:scroll; border-bottom:1px solid grey;" class=" container bg-dark">
 <br><br>
-<h1>Polls</h1>
+<h1 style="color:grey">Trending Polls</h1>
 <div style="float:right">
 <!-- https://www.w3schools.com/howto/howto_css_search_button.asp -->
 <form>
-  <input type="text" placeholder="Search.." name="search"
+  <input type="text" placeholder="Search Polls.." name="search"
   {% if search %} value="{{ search }}" {% endif %}
   >
   <button type="submit"><i class="fa fa-search"></i></button>
 <a href="{% url 'home:all' %}"><i class="fa fa-undo"></i></a>
 </form>
+
+<div class="container bg-light" style="margin-top:10vh; border-radius:3%; padding-bottom:1vh">
+<h3 class="white-important p-2">
+Trending Issues</h3>
+<ul style="list-style-type: none">
+{% if issue_list %}
+{% for issue in issue_list|slice:":10" %}
+<a href="{% url 'home:issue_detail' issue.id %}"><li style="margin-bottom:1vh">#{{issue.title}}<li><a>
+{% endfor %}
+{% else %}
+No Issue at the moment.<br>
+Raise your issue...
+{% endif %}
+</div> 
+
+<div class="container bg-light" style="margin-top:10vh; margin-bottom:10vh; border-radius:3%; padding-bottom:1vh">
+<h3 class="white-important p-2">
+Who To Follow</h3>
+<ul style="list-style-type: none">
+{% if user_list %}
+{% for usr in user_list|slice:":10" %}
+{% if usr in following_list %}
+
+{% elif usr.username == user.username %}
+
+{% else %}
+<a href="{% url 'home:user_detail' usr.username %}"><li style="margin-bottom:1vh">{{usr.username}}<li><a>
+{% endif %}
+{% endfor %}
+{% else %}
+No user to follow.
+{% endif %}
+</div> 
+
 </div>
 <p>
 {% if poll_list %}
 <ul style="list-style-type: none;">
-  {% for poll in poll_list %}
+  {% for poll in poll_list|slice:":5" %}
     <li>
     <div style="width:55%; height:20vh; border:1px solid white; border-radius:1%; margin-left:-2%; margin-bottom:1vh;" class="container bg-light">
         <br>
         
         <a href="{% url 'home:poll_detail'  poll.id %}">
-            {% if poll.question|length < 30 %}
+            {% if poll.question|length < 35 %}
                 {{ poll.question }}
             {% else %}
                 {{ poll.question|slice:"0:30" }}
@@ -118,7 +208,7 @@
         <br><br/>
         <small><span style="margin-left:40%">
         {% if poll.owner.username %}
-            By {{ poll.owner.username }} &nbsp;&nbsp;
+             <a href="{% url 'home:user_detail' poll.owner.username %}" style="text-decoration:none; color:green" >By {{ poll.owner.username }} </a>&nbsp;&nbsp;
         {% endif %}
         
         {{ poll.natural_updated }}
@@ -127,20 +217,14 @@
 
         {% comment %} {% if user.is_authenticated %}
         <!-- Two hrefs with two stacked icons each - one showing and one hidden -->
-        <a href="#" onclick=
-            "favPost('{% url 'home:poll_unfavorite' poll.id %}', {{ poll.id }} );return false;"
-            {% if poll.id not in favorites %} style="display: none;" {% endif %}
-            id="favorite_star_{{poll.id}}">
+        <a href="#" onclick="favPost('{% url 'home:poll_unfavorite' poll.id %}', {{ poll.id }} );return false;" {% if poll.id not in favorites %} style="display: none;" {% endif %} id="favorite_star_{{poll.id}}">
         <span class="fa-stack" style="vertical-align: middle;">
         <i class="fa fa-star fa-stack-1x" style="color: orange;"></i>
         <i class="fa fa-star-o fa-stack-1x"></i>
         </span>
         </a>
         <!-- the second href -->
-        <a href="#" onclick=
-             "favPost('{% url 'home:poll_favorite' poll.id %}', {{ poll.id }} );return false;"
-            {% if poll.id in favorites %} style="display: none;" {% endif %}
-            id="unfavorite_star_{{poll.id}}">
+        <a href="#" onclick="favPost('{% url 'home:poll_favorite' poll.id %}', {{ poll.id }} );return false;" {% if poll.id in favorites %} style="display: none;" {% endif %} id="unfavorite_star_{{poll.id}}">
         <span class="fa-stack" style="vertical-align: middle;">
         <i class="fa fa-star fa-stack-1x" style="display: none; color: orange;"></i>
         <i class="fa fa-star-o fa-stack-1x"></i>
@@ -157,21 +241,10 @@
 </p>
 
 </div>
-<script>
-function favPost(url, thing_id) {
-    console.log('Requesting JSON');
-    $.post(url, {},  function(rowz){
-        console.log(url, 'finished');
-        $("#unfavorite_star_"+ad_id).toggle();
-        $("#favorite_star_"+ad_id).toggle();
-    }).fail(function(xhr) {
-        alert('Url failed with '+xhr.status+' '+url);
-    });
-}
-</script>
+
 
 <!-- Footer -->
-<footer style="float:bottom; height: 10vh; width: 100%; margin-bottom: 0; padding-bottom: 0; background-color: pink;">
+<footer style="float:bottom; height: 10vh; width: 100%; margin-bottom: 0; padding-bottom: 0; background-color: Gainsboro;">
 
 <div style="float: left;margin:1% 3%; width: 53%">
 <a href="#" style="text-decoration: none; margin-left:2%;">About</a>
@@ -204,7 +277,7 @@ function favPost(url, thing_id) {
   
   </div>
 
-<footer style="height: 10vh; width: 100%; margin-bottom: 0; padding-bottom: 0;">
+<footer style="height: 10vh; width: 100%; margin-bottom: 0; padding-bottom: 0;background-color: Gainsboro; ">
 <div style="float: left;margin:1% 3%; width: 53%">
 <a href="#" style="text-decoration: none; margin-left:2%;">About</a>
 <a href="#" style="text-decoration: none; margin-left:2%;">Terms of use</a>

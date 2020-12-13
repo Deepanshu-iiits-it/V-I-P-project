@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container bg-light">
+<a href="{% url 'home:all' %}">Home</a>
+<br>
+    <h3 class="white-important">
+        Change profile data
+    </h3>
+    <form action="{% url 'home:profile' %}" method="POST">
+        {% csrf_token %}
+            {{ uform | crispy }}
+            {{ pform | crispy }}
+            <input type="submit" value="Change data">
+    </form>
+<br>
+<a href="{% url 'password_reset' %}">Reset Password</a>
+<br>
+<br>
+</div>
+{% endblock content %}
