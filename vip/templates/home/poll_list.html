@@ -183,7 +183,7 @@ No user to follow.
 <p>
 {% if poll_list %}
 <ul style="list-style-type: none;">
-  {% for poll in poll_list|slice:":5" %}
+  {% for poll in poll_list|slice:":10" %}
     <li>
     <div style="width:55%; height:20vh; border:1px solid white; border-radius:1%; margin-left:-2%; margin-bottom:1vh;" class="container bg-light">
         <br>
@@ -206,13 +206,12 @@ No user to follow.
         
         {% endif %}
         <br><br/>
-        <small><span style="margin-left:40%">
-        {% if poll.owner.username %}
-             <a href="{% url 'home:user_detail' poll.owner.username %}" style="text-decoration:none; color:green" >By {{ poll.owner.username }} </a>&nbsp;&nbsp;
+        <small>
+        {% if poll.owner == user %}
+        <span style="margin-left:40%; color:orange"><a href="{% url 'home:user_detail' poll.owner.username %}" style="text-decoration:none; color:orange" >By me </a>&nbsp;&nbsp;{{ poll.natural_updated }}</span>
+        {% elif poll.owner.username %}
+            <span style="margin-left:40%; color:green"><a href="{% url 'home:user_detail' poll.owner.username %}" style="text-decoration:none; color:green" >By {{ poll.owner.username }} </a>&nbsp;&nbsp;{{ poll.natural_updated }}</span>
         {% endif %}
-        
-        {{ poll.natural_updated }}
-        </span>
         </small>
 
         {% comment %} {% if user.is_authenticated %}

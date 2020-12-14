@@ -25,10 +25,15 @@
 </div>
 {% endif %}
 <span style="float: right;">
-({{ poll.updated_at|naturaltime }})
+
 {% if poll.owner == user %}
+<small style="color:orange"><a href="{% url 'home:user_detail' poll.owner.username %}" style="text-decoration:none; color:orange" >By me </a>
+({{ poll.updated_at|naturaltime }})</small>
 <a href="{% url 'home:poll_update' poll.id %}"><i class="fa fa-pencil"></i></a>
 <a href="{% url 'home:poll_delete' poll.id %}"><i class="fa fa-trash"></i></a>
+{% else %}
+<small style="color:green"><a href="{% url 'home:user_detail' poll.owner.username %}" style="text-decoration:none; color:green" >By {{ poll.owner.username }} </a>
+({{ poll.updated_at|naturaltime }})</small>
 {% endif %}
 </span>
 <h1>{{ poll.question }}</h1>
@@ -44,6 +49,14 @@
 {% endfor %}
 </ul>
 <br/>
+{% load social_share %}
+<h4>Share on other platforms:</h4>
+  <ul class="blog-share-buttons" style="list-style-type:none">
+    <li>{% post_to_twitter object.title %}</li>
+    <li>{% post_to_facebook object.title %}</li>
+    <li>{% post_to_whatsapp object.title %}</li>
+    {% comment %} <li><a href="#" title="Linkedin"><i class="fa fa-linkedin"></i></a></li> {% endcomment %}
+  </ul>
 <h5>Total Votes = {{ctotal}}</h5>
 <h5>Total Views = {{ccount}}</h5>
 </div>

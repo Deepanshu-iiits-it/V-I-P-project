@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% load crispy_forms_tags %}
 {% block content %}
-<div class="container bg-light">
+<div class="jumbotron">
 <a href="{% url 'home:all' %}">Home</a>
 <br>
     <h3 class="white-important">
-        Change profile data
+        Your Profile
     </h3>
     <form action="{% url 'home:profile' %}" method="POST">
         {% csrf_token %}
@@ -15,7 +15,64 @@
     </form>
 <br>
 <a href="{% url 'password_reset' %}">Reset Password</a>
+<br><br/>
+<h2>Your Recent Activity</h2>
 <br>
-<br>
+
+<div class="container bg-light">
+
+<h4>Recent Polls</h4>
+{% if poll_list %}
+<ul style="list-style-type: none;">
+{% for poll in poll_list %}
+<a href="{% url 'home:poll_detail'  poll.id %}" style="text-decoration:none; color:black;">
+<li>{{poll.question}}</li></a>
+{% endfor %}
+</ul>
+{% else %}
+Add polls on VIP... Click <a href="{% url 'home:poll_create' %}"> here </a>to add new poll.
+{% endif %}
+
+</div><br/>
+<div class="container bg-light">
+<h4>Recent Views on Polls</h4>
+{% if comment_list %}
+<ul style="list-style-type: none;">
+{% for comment in comment_list %}
+<li {%if comment.anonymous is True%}style="color:red;"{%endif%}>"{{comment.text}}" for the poll <a href="{% url 'home:poll_detail'  comment.poll.id %}" style="text-decoration:none; {%if comment.anonymous is True%}color:red;{%else%}color:black;{%endif%}"> "{{comment.poll.question}}"</li>
+{% endfor %}
+</ul>
+{% else %}
+Present views on polls in VIP... See Trending Polls <a href="{% url 'home:all' %}">here</a>.
+{% endif %}
+</div>
+<br/>
+<div class="container bg-light">
+<h4>Recent Issues</h4>
+{% if issue_list %}
+<ul style="list-style-type: none;">
+{% for issue in issue_list %}
+<a href="{% url 'home:issue_detail'  issue.id %}" style="text-decoration:none; color:black;">
+<li {%if issue.anonymous is True%}style="color:red;"{%endif%}>#{{issue.title}}</li></a>
+{% endfor %}
+</ul>
+{% else %}
+Raise issues on VIP... Click <a href="{% url 'home:issue_create' %}">here</a> to raise new issue.
+{% endif %}
+</div>
+<br/>
+<div class="container bg-light">
+<h4>Recent Views on Issues</h4>
+{% if issue_comment_list %}
+<ul style="list-style-type: none;">
+{% for issue_comment in issue_comment_list %}
+<li {%if issue_comment.anonymous is True%}style="color:red;"{%endif%}>"{{issue_comment.text}}" for the issue <a href="{% url 'home:issue_detail'  issue_comment.issue.id %}" style="text-decoration:none; {%if issue_comment.anonymous is True%}color:red;{%else%}color:black;{%endif%}"> "#{{issue_comment.issue.title}}" </a></li>
+{% endfor %}
+</ul>
+{% else %}
+Present your views on Issues in VIP... See Trending Issues <a href="{% url 'home:all' %}">here</a>.
+{% endif %}
+</div>
+<small style="color:red">* Views and Issues in RED were posted in Anonymous Mode...</small>
 </div>
 {% endblock content %}

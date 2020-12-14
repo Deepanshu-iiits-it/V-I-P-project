@@ -349,6 +349,10 @@ class DeleteFavoriteView(LoginRequiredMixin, View):
 
 @login_required
 def profile(request):
+    poll_list= Poll.objects.filter(owner=request.user).order_by('-updated_at')[:10]
+    issue_list= Issue.objects.filter(owner= request.user).order_by('-updated_at')[:10]
+    comment_list= Comment.objects.filter(owner= request.user).order_by('-updated_at')[:10]
+    issue_comment_list= IssueComment.objects.filter(owner= request.user).order_by('-updated_at')[:10]
     if request.method == 'POST':
         uform = UserUpdateForm(request.POST, instance=request.user)
         pform = ProfileUpdateForm(request.POST, request.FILES, instance=request.user.profile)
@@ -362,7 +366,7 @@ def profile(request):
         uform = UserUpdateForm(instance=request.user)
         pform = ProfileUpdateForm(instance=request.user.profile)
 
-    return render(request, 'home/profile.html', {'uform': uform, 'pform': pform})
+    return render(request, 'home/profile.html', {'uform': uform, 'pform': pform,'poll_list':poll_list, 'issue_list':issue_list, 'comment_list':comment_list, 'issue_comment_list':issue_comment_list,})
 
 @login_required
 def SearchView(request):
@@ -422,6 +426,11 @@ def SearchView(request):
 @login_required
 def UserDetail(request, viewusername):
     viewuser=User.objects.filter(username=viewusername)[0]
+    poll_list= Poll.objects.filter(owner=viewuser).order_by('-updated_at')[:10]
+    issue_list= Issue.objects.filter(owner= viewuser).order_by('-updated_at')[:10]
+    comment_list= Comment.objects.filter(owner= viewuser).order_by('-updated_at')[:10]
+    issue_comment_list= IssueComment.objects.filter(owner= viewuser).order_by('-updated_at')[:10]
+
     if(viewuser==request.user):
         if request.method == 'POST':
             uform = UserUpdateForm(request.POST, instance=request.user)
@@ -436,7 +445,7 @@ def UserDetail(request, viewusername):
             uform = UserUpdateForm(instance=request.user)
             pform = ProfileUpdateForm(instance=request.user.profile)
     
-        return render(request, 'home/profile.html', {'uform': uform, 'pform': pform})
+        return render(request, 'home/profile.html', {'uform': uform, 'pform': pform,'poll_list':poll_list, 'issue_list':issue_list, 'comment_list':comment_list, 'issue_comment_list':issue_comment_list,})
     elif(request.user.id is not None):
         follows_between = Follow.objects.filter(user=request.user,follow_user=viewuser)
         canfollow=True
@@ -452,25 +461,37 @@ def UserDetail(request, viewusername):
         prof=Profile.objects.filter(user=viewuser)[0]
         folowings= Follow.objects.filter(user=viewuser)
         followers= Follow.objects.filter(follow_user=viewuser)
-        context={'viewuser':viewuser, 'prof':prof,'canfollow':canfollow, 'canunfollow':canunfollow, 'followers':followers.count(), 'followings':folowings.count(),}
+        context={'viewuser':viewuser, 'prof':prof,'canfollow':canfollow, 'canunfollow':canunfollow, 'followers':followers.count(), 'followings':folowings.count(),'poll_list':poll_list, 'issue_list':issue_list, 'comment_list':comment_list, 'issue_comment_list':issue_comment_list,}
         return render(request, 'home/user_detail.html', context)
 
 @login_required
 def FollowView(request, viewusername):
     viewuser=User.objects.filter(username=viewusername)[0]
+    poll_list= Poll.objects.filter(owner=viewuser).order_by('-updated_at')[:10]
+    issue_list= Issue.objects.filter(owner= viewuser).order_by('-updated_at')[:10]
+    comment_list= Comment.objects.filter(owner= viewuser).order_by('-updated_at')[:10]
+    issue_comment_list= IssueComment.objects.filter(owner= viewuser).order_by('-updated_at')[:10]
     prof=Profile.objects.filter(user=viewuser)[0]
     new_relation = Follow(user=request.user, follow_user=viewuser)
     new_relation.save()
-    context={'viewuser':viewuser, 'prof':prof, 'canfollow':False, 'canunfollow':True}
+    folowings= Follow.objects.filter(user=viewuser)
+    followers= Follow.objects.filter(follow_user=viewuser)
+    context={'viewuser':viewuser, 'prof':prof, 'canfollow':False, 'canunfollow':True ,'followers':followers.count(), 'followings':folowings.count(),'poll_list':poll_list, 'issue_list':issue_list, 'comment_list':comment_list, 'issue_comment_list':issue_comment_list,}
     return render(request, 'home/user_detail.html', context)
 
 @login_required
 def UnfollowView(request, viewusername):
     viewuser=User.objects.filter(username=viewusername)[0]
+    poll_list= Poll.objects.filter(owner=viewuser).order_by('-updated_at')[:10]
+    issue_list= Issue.objects.filter(owner= viewuser).order_by('-updated_at')[:10]
+    comment_list= Comment.objects.filter(owner= viewuser).order_by('-updated_at')[:10]
+    issue_comment_list= IssueComment.objects.filter(owner= viewuser).order_by('-updated_at')[:10]
     prof=Profile.objects.filter(user=viewuser)[0]
     follows_between = Follow.objects.filter(user=request.user,follow_user=viewuser)
     follows_between.delete()
-    context={'viewuser':viewuser, 'prof':prof, 'canfollow':True, 'canunfollow':False}
+    folowings= Follow.objects.filter(user=viewuser)
+    followers= Follow.objects.filter(follow_user=viewuser)
+    context={'viewuser':viewuser, 'prof':prof, 'canfollow':True, 'canunfollow':False,  'followers':followers.count(), 'followings':folowings.count(),'poll_list':poll_list, 'issue_list':issue_list, 'comment_list':comment_list, 'issue_comment_list':issue_comment_list,}
     return render(request, 'home/user_detail.html', context)
 
 @login_required

@@ -25,22 +25,59 @@
 </div>
 {% endif %}
 <span style="float: right;">
-({{ issue.updated_at|naturaltime }})
+
 {% if issue.owner == user %}
+<small style="color:orange"><a href="{% url 'home:user_detail' issue.owner.username %}" style="text-decoration:none; color:orange" >By me </a>
+({{ issue.updated_at|naturaltime }})</small>
 <a href="{% url 'home:issue_update' issue.id %}"><i class="fa fa-pencil"></i></a>
 <a href="{% url 'home:issue_delete' issue.id %}"><i class="fa fa-trash"></i></a>
+{% elif issue.anonymous is True %}
+<small style="color:red"><a href="{% url 'home:user_detail' issue.owner.username %}" style="text-decoration:none; color:red" >By ? </a>
+({{ issue.updated_at|naturaltime }})</small>
+{% else %}
+<small style="color:green"><a href="{% url 'home:user_detail' issue.owner.username %}" style="text-decoration:none; color:green" >By {{ issue.owner.username }} </a>
+({{ issue.updated_at|naturaltime }})</small>
 {% endif %}
 </span>
 <h1>#{{ issue.title }}</h1>
-{% if issue.anonymous is False %}
-<small style="color:green">By {{ issue.owner }}</small>
-{% endif %}
+{% comment %} {% if issue.anonymous is False %}
+<small style="color:green"><a href="{% url 'home:user_detail' issue.owner.username %}" style="text-decoration:none; color:green" >By {{ issue.owner.username }} </a></small>
+{% endif %} {% endcomment %}
 {% if issue.content_type %}
 <img style="float:right; max-width:30%; margin-left:3%" src="{% url 'home:issue_picture' issue.id %}"
     onclick="document.getElementById('overlay').style.display = 'block';">
 {% endif %}
 <p>{{issue.text}}</p>
 <br/>
+
+
+{% comment %} 
+
+{% post_to_facebook issue "Post to Facebook!" %}
+{% post_to_twitter "New Song: {{issue.title}}. Check it out!" issue "Post to Twitter" %}
+{% post_to_gplus issue "Post to Google+!" %}
+{% post_to_linkedin issue %}
+{% send_email issue.title "New Song: {{issue.title}}. Check it out!" issue "Share via email" %}
+{% post_to_reddit "New Song: {{issue.title}}" <issue> %}
+{% post_to_telegram "New Song: {{issue.title}}" <issue> %}
+{% post_to_whatsapp issue "Share via WhatsApp" %}
+{% save_to_pinterest issue %} {% endcomment %}
+{% comment %} {% add_pinterest_script %} 
+#Required for save_to_pinterest. Add to the end of body tag. {% endcomment %}
+{% load social_share %}
+{% comment %} <div id="subheader" class="blog">
+  <div class="subheader-text">
+    <h1>Did you like this Post ?</h1>
+    <h4>Consider sharing Most readers like to share our Posts </h4>
+  <a href="#" rel="shared-popover" data-popover-content="#shared-btn-Popover" title="Share" data-placement="bottom" class="mtr-btn button-circle button-fab ripple"></a>
+<div id="shared-btn-Popover" class="hide"> {% endcomment %}
+<h4>Share on other platforms:</h4>
+  <ul class="blog-share-buttons" style="list-style-type:none">
+    <li>{% post_to_twitter object.title %}</li>
+    <li>{% post_to_facebook object.title %}</li>
+    <li>{% post_to_whatsapp object.title %}</li>
+    {% comment %} <li><a href="#" title="Linkedin"><i class="fa fa-linkedin"></i></a></li> {% endcomment %}
+  </ul>
 <h5>Total Views = {{ccount}}</h5>
 </div>
 {% comment %} {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %} {% endcomment %}

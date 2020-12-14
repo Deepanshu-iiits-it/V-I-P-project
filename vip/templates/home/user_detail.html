@@ -5,7 +5,7 @@
 
 
 <h1>{{ viewuser.username }}</h1>
-{{ prof.name }}<br/>
+{% if  prof.name %}{{ prof.name }}<br/>{% endif %}
 {{viewuser.email}}<br/>
 <a href="{% url 'home:followings' viewuser.username %}">Followings {{followings}}</a> |
 <a href="{% url 'home:followers' viewuser.username %}">Followers {{followers}}</a>
@@ -16,5 +16,69 @@
 {% if canunfollow is True %}
 <a href="{% url 'home:unfollow' viewuser.username %}"><button>Unfollow</button></a>
 {% endif %}
+<br/><br/>
+<h2>Recent Activity of {{ viewuser.username }}</h2>
+<br>
+
+<div class="container bg-light">
+
+<h4>Recent Polls</h4>
+{% if poll_list %}
+<ul style="list-style-type: none;">
+{% for poll in poll_list %}
+<a href="{% url 'home:poll_detail'  poll.id %}" style="text-decoration:none; color:black;">
+<li>{{poll.question}}</li></a>
+{% endfor %}
+</ul>
+{% else %}
+No Recent Polls by {{ viewuser.username }}.
+{% endif %}
+
+</div><br/>
+<div class="container bg-light">
+<h4>Recent Views on Polls</h4>
+{% if comment_list %}
+<ul style="list-style-type: none;">
+{% for comment in comment_list %}
+{%if comment.anonymous is False%}
+<li>"{{comment.text}}" for the poll <a href="{% url 'home:poll_detail'  comment.poll.id %}" style="text-decoration:none;color:black;"> "{{comment.poll.question}}"</li>
+{%endif%}
+{% endfor %}
+</ul>
+{% else %}
+No Recent Views on Polls by {{ viewuser.username }}.
+{% endif %}
+</div>
+<br/>
+<div class="container bg-light">
+<h4>Recent Issues</h4>
+{% if issue_list %}
+<ul style="list-style-type: none;">
+{% for issue in issue_list %}
+{%if issue.anonymous is False%}
+<a href="{% url 'home:issue_detail'  issue.id %}" style="text-decoration:none; color:black;">
+<li>#{{issue.title}}</li></a>
+{%endif%}
+{% endfor %}
+</ul>
+{% else %}
+No Recent Issues by {{ viewuser.username }}.
+{% endif %}
+</div>
+<br/>
+<div class="container bg-light">
+<h4>Recent Views on Issues</h4>
+{% if issue_comment_list %}
+<ul style="list-style-type: none;">
+{% for issue_comment in issue_comment_list %}
+{%if issue_comment.anonymous is False%}
+<li>"{{issue_comment.text}}" for the issue <a href="{% url 'home:issue_detail'  issue_comment.issue.id %}" style="text-decoration:none; color:black;"> "#{{issue_comment.issue.title}}" </a></li>
+{%endif%}
+{% endfor %}
+</ul>
+{% else %}
+No Recent Views on Issues by {{ viewuser.username }}.
+{% endif %}
+</div>
 </div>
 {%endblock%}
