@@ -67,14 +67,18 @@ class PollListView(OwnerListView):
         userobjects = User.objects.all()
 
         # userobjects.remove(self)
-        folowings= Follow.objects.filter(user=request.user)
-        followers= Follow.objects.filter(follow_user=request.user)
-        # for fl in followers:
-        #     userobjects.remove(fl.user)
-        following_list=[]
-        for fi in folowings:
-            following_list.append(fi.follow_user)
-        ctx = {'poll_list' : objects, 'search': strval, 'user_list': userobjects, 'issue_list': issues,'followers':followers.count(), 'followings':folowings.count(),'following_list':following_list}
+        if(request.user.is_authenticated):
+            folowings= Follow.objects.filter(user=request.user)
+            followers= Follow.objects.filter(follow_user=request.user)
+            # for fl in followers:
+            #     userobjects.remove(fl.user)
+            following_list=[]
+            for fi in folowings:
+                following_list.append(fi.follow_user)
+            ctx = {'poll_list' : objects, 'search': strval, 'user_list': userobjects, 'issue_list': issues,'followers':followers.count(), 'followings':folowings.count(),'following_list':following_list}
+        else:
+            ctx = {'poll_list' : objects, 'search': strval, 'user_list': userobjects, 'issue_list': issues,}
+        
         retval = render(request, self.template_name, ctx)
 
         dump_queries()
@@ -138,7 +142,7 @@ class PollResultView(OwnerDetailView):
             counttotal+=choiceins.votes
         comments = Comment.objects.filter(poll=x).order_by('-updated_at')
         comment_form = CommentForm()
-        context = { 'poll' : x, 'comments': comments, 'comment_form': comment_form,'ctotal':counttotal, 'ccount':comments.count()}
+        context = { 'poll' : x, 'comments': comments, 'comment_form': comment_form,'ctotal':counttotal, 'ccount':comments.count(),}
         return render(request, self.template_name, context)
 
 class PollCreateView(LoginRequiredMixin, View):
@@ -505,3 +509,9 @@ def FollowingsView(request, username):
     user= User.objects.filter(username=username)[0]
     following_list= Follow.objects.filter(user=user)
     return render(request, 'home/following.html',{'following_list':following_list, 'user':user})
+
+def AboutView(request):
+    return render(request, 'home/about.html')
+
+def ContactView(request):
+    return render(request, 'home/contact.html')

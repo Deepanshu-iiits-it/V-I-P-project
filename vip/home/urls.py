@@ -25,6 +25,8 @@ from . import views
 
 app_name='home'
 urlpatterns = [
+    path('about/', views.AboutView, name='about'),
+    path('contact/', views.ContactView, name='contact'),
     path('profile/', views.profile, name='profile'),
     path('search/', views.SearchView, name='search_user'),
     path('user/<str:viewusername>', views.UserDetail, name='user_detail'),

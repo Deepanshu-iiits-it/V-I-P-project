@@ -39,7 +39,7 @@ Add polls on VIP... Click <a href="{% url 'home:poll_create' %}"> here </a>to ad
 {% if comment_list %}
 <ul style="list-style-type: none;">
 {% for comment in comment_list %}
-<li {%if comment.anonymous is True%}style="color:red;"{%endif%}>"{{comment.text}}" for the poll <a href="{% url 'home:poll_detail'  comment.poll.id %}" style="text-decoration:none; {%if comment.anonymous is True%}color:red;{%else%}color:black;{%endif%}"> "{{comment.poll.question}}"</li>
+<li {%if comment.anonymous is True %}style="color:red;"{%endif%}>"{{comment.text}}" for the poll <a href="{% url 'home:poll_detail'  comment.poll.id %}" style="text-decoration:none; {%if comment.anonymous is True%}color:red;{%else%}color:black;{%endif%}"> "{{comment.poll.question}}"</li>
 {% endfor %}
 </ul>
 {% else %}
